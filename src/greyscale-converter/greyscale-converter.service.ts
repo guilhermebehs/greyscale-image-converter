@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import Jimp from 'jimp';
 import { Message } from 'amqplib';
-import { RabbitConnectorService } from 'src/infra/rabbit-connector/rabbit-connector.service';
-import { Queue } from 'src/infra/rabbit-connector/queue';
+import { Queue } from '@infra/rabbit-connector/queue';
 import { ImageReceivedEvent } from 'src/dtos';
+import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
+import { ImageEditorAdapter } from '@src/infra/image-editor-adapter/image-editor-adapter.service';
 
 @Injectable()
 export class GreyscaleConverterService {
-  constructor(private readonly rabbitmqConnector: RabbitConnectorService) {
+  constructor(
+    private readonly rabbitmqConnector: RabbitConnector,
+    private readonly imageEditorAdapter: ImageEditorAdapter,
+  ) {
     this.bindListener();
   }
 
   async convert({ imageName }: ImageReceivedEvent) {
-    Jimp.read('./files/' + imageName, (err, imageRead) => {
-      imageRead.greyscale().write('./files/' + imageName);
-    });
-    await this.rabbitmqConnector.notifySendImageToS3({
+    await this.imageEditorAdapter.greyscale(`./files/${imageName}`);
+    await this.rabbitmqConnector.notifyUploadImage({
       imageName,
       ocurredAt: new Date(),
     });

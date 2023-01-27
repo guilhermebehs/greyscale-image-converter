@@ -1,19 +1,21 @@
 import { Module } from '@nestjs/common';
-import { RabbitConnectorService } from './rabbit-connector/rabbit-connector.service';
-import { S3Service } from './s3/s3.service';
+import { CloudAdapter } from './cloud-adapter/cloud-adapter.service';
+import { ImageEditorAdapter } from './image-editor-adapter/image-editor-adapter.service';
+import { RabbitConnector } from './rabbit-connector/rabbit-connector.service';
 
 @Module({
   providers: [
     {
-      provide: RabbitConnectorService,
+      provide: RabbitConnector,
       useFactory: async () => {
-        const rabbitMq = new RabbitConnectorService();
+        const rabbitMq = new RabbitConnector();
         await rabbitMq.connect();
         return rabbitMq;
       },
     },
-    S3Service,
+    CloudAdapter,
+    ImageEditorAdapter,
   ],
-  exports: [RabbitConnectorService, S3Service],
+  exports: [RabbitConnector, CloudAdapter, ImageEditorAdapter],
 })
 export class InfraModule {}

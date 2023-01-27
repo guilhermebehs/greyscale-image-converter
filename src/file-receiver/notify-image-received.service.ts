@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { RabbitConnectorService } from 'src/infra/rabbit-connector/rabbit-connector.service';
+import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
 import { ImageReceivedEvent } from '../dtos/ImageReceivedEvent';
 
 @Injectable()
 export class NotifyImageReceivedService {
-  constructor(private readonly rabbitMqConnector: RabbitConnectorService) {}
+  constructor(private readonly rabbitMqConnector: RabbitConnector) {}
 
   async notify(imageName: string) {
     const imageReceivedEvent: ImageReceivedEvent = {

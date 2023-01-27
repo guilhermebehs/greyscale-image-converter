@@ -1,2 +1,2 @@
 export * from './ImageReceivedEvent';
-export * from './SendImageToS3Command';
+export * from './UploadImageCommand';

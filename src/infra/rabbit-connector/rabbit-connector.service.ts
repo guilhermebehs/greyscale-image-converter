@@ -1,9 +1,9 @@
 import { Channel, connect } from 'amqplib';
-import { SendImageToS3Command, ImageReceivedEvent } from 'src/dtos';
+import { ImageReceivedEvent, UploadImageCommand } from 'src/dtos';
 import { Exchange } from './exchange';
 import { Queue } from './queue';
 
-export class RabbitConnectorService {
+export class RabbitConnector {
   private channel: Channel;
 
   async connect() {
@@ -23,7 +23,7 @@ export class RabbitConnectorService {
       durable: false,
     });
 
-    this.channel.assertExchange(Exchange.SEND_IMAGE_TO_S3_EXCHANGE, 'fanout', {
+    this.channel.assertExchange(Exchange.UPLOAD_IMAGE_EXCHANGE, 'fanout', {
       durable: false,
     });
   }
@@ -38,12 +38,12 @@ export class RabbitConnectorService {
       '',
     );
 
-    await this.channel.assertQueue(Queue.SEND_IMAGE_TO_S3_QUEUE, {
+    await this.channel.assertQueue(Queue.UPLOAD_IMAGE_QUEUE, {
       durable: false,
     });
     await this.channel.bindQueue(
-      Queue.SEND_IMAGE_TO_S3_QUEUE,
-      Exchange.SEND_IMAGE_TO_S3_EXCHANGE,
+      Queue.UPLOAD_IMAGE_QUEUE,
+      Exchange.UPLOAD_IMAGE_EXCHANGE,
       '',
     );
   }
@@ -59,13 +59,13 @@ export class RabbitConnectorService {
     );
   }
 
-  async notifySendImageToS3(sendImageToS3: SendImageToS3Command) {
-    const sendImageToS3Str = JSON.stringify(sendImageToS3);
+  async notifyUploadImage(uploadImage: UploadImageCommand) {
+    const uploadImageStr = JSON.stringify(uploadImage);
 
     this.channel.publish(
-      Exchange.SEND_IMAGE_TO_S3_EXCHANGE,
+      Exchange.UPLOAD_IMAGE_EXCHANGE,
       '',
-      Buffer.from(sendImageToS3Str),
+      Buffer.from(uploadImageStr),
       { headers: { 'Content-Type': 'application/json' } },
     );
   }

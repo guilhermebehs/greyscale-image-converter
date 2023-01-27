@@ -3,7 +3,7 @@ import AWS from 'aws-sdk';
 import { createReadStream } from 'fs';
 
 @Injectable()
-export class S3Service {
+export class CloudAdapter {
   private s3: AWS.S3;
 
   constructor() {

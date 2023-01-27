@@ -3,20 +3,22 @@
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
-    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@file-receiver/*": ["./src/file-receiver/*"],
+      "@greyscale-converter/*": ["./src/greyscale-converter/*"],
+      "@infra/*": ["./src/infra/*"],
+      "@uploader/*": ["src/uploader"],
+      "@test/*": ["./test/*"]
+    },
+    "incremental": true
+  },
+  "exclude": ["node_modules", "dist"]
 }

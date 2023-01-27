@@ -1,4 +1,4 @@
-export type SendImageToS3Command = {
+export type UploadImageCommand = {
   imageName: string;
   ocurredAt: Date;
 };
