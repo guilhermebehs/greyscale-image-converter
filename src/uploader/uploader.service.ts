@@ -15,7 +15,7 @@ export class UploaderService {
     this.bindListener();
   }
 
-  private async upload({ imageName }: UploadImageCommand) {
+  async upload({ imageName }: UploadImageCommand) {
     await this.cloudAdapter.uploadFile(imageName);
     rmSync(`./files/${imageName}`);
   }
