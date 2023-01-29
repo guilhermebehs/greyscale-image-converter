@@ -1,5 +1,4 @@
 import { TestingModule, Test } from '@nestjs/testing';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
 import { UploaderService } from '@src/uploader/uploader.service';
 import { CloudAdapter } from '@src/infra/cloud-adapter/cloud-adapter.service';
 import fs from 'fs';
@@ -22,7 +21,7 @@ describe('UploaderService', () => {
           },
         },
         {
-          provide: RabbitConnector,
+          provide: 'QueueConnector',
           useValue: {
             bindListener: () => {},
           },

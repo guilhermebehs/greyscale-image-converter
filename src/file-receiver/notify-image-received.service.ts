@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { ImageReceivedEvent } from '../dtos/ImageReceivedEvent';
+import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 
 @Injectable()
 export class NotifyImageReceivedService {
-  constructor(private readonly rabbitMqConnector: RabbitConnector) {}
+  constructor(
+    @Inject('QueueConnector')
+    private readonly queueConnector: QueueConnector,
+  ) {}
 
   async notify(imageName: string) {
     const imageReceivedEvent: ImageReceivedEvent = {
@@ -12,6 +15,6 @@ export class NotifyImageReceivedService {
       ocurredAt: new Date(),
     };
 
-    await this.rabbitMqConnector.notifyImageReceived(imageReceivedEvent);
+    await this.queueConnector.notifyImageReceived(imageReceivedEvent);
   }
 }

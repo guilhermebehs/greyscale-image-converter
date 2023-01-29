@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CloudAdapter } from '@infra/cloud-adapter/cloud-adapter.service';
 import { Message } from 'amqplib';
 import { rmSync } from 'fs';
 import { UploadImageCommand } from 'src/dtos';
 import { Queue } from '@infra/rabbit-connector/queue';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
+import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 
 @Injectable()
 export class UploaderService {
   constructor(
+    @Inject('QueueConnector')
+    private readonly queueConnector: QueueConnector,
     private readonly cloudAdapter: CloudAdapter,
-    private readonly rabbitmqConnector: RabbitConnector,
   ) {
     this.bindListener();
   }
@@ -25,6 +26,6 @@ export class UploaderService {
       await this.upload(command);
     };
 
-    this.rabbitmqConnector.bindListener(Queue.UPLOAD_IMAGE_QUEUE, cb);
+    this.queueConnector.bindListener(Queue.UPLOAD_IMAGE_QUEUE, cb);
   }
 }

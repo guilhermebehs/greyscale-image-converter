@@ -1,9 +1,10 @@
 import { Channel, connect } from 'amqplib';
 import { ImageReceivedEvent, UploadImageCommand } from 'src/dtos';
+import { QueueConnector } from '../interfaces/queue-connector';
 import { Exchange } from './exchange';
 import { Queue } from './queue';
 
-export class RabbitConnector {
+export class RabbitConnector implements QueueConnector {
   private channel: Channel;
 
   async connect() {

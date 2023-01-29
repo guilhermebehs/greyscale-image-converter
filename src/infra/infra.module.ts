@@ -6,7 +6,7 @@ import { RabbitConnector } from './rabbit-connector/rabbit-connector.service';
 @Module({
   providers: [
     {
-      provide: RabbitConnector,
+      provide: 'QueueConnector',
       useFactory: async () => {
         const rabbitMq = new RabbitConnector();
         await rabbitMq.connect();
@@ -16,6 +16,6 @@ import { RabbitConnector } from './rabbit-connector/rabbit-connector.service';
     CloudAdapter,
     ImageEditorAdapter,
   ],
-  exports: [RabbitConnector, CloudAdapter, ImageEditorAdapter],
+  exports: ['QueueConnector', CloudAdapter, ImageEditorAdapter],
 })
 export class InfraModule {}

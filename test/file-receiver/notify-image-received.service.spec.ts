@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotifyImageReceivedService } from '@src/file-receiver/notify-image-received.service';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
+import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 
 describe('NotifyImageReceivedService', () => {
-  let rabbitMqConnector: RabbitConnector;
+  let queueConnector: QueueConnector;
   let notifyImageReceivedService: NotifyImageReceivedService;
   let moduleTest: TestingModule;
 
@@ -14,7 +14,7 @@ describe('NotifyImageReceivedService', () => {
       providers: [
         NotifyImageReceivedService,
         {
-          provide: RabbitConnector,
+          provide: 'QueueConnector',
           useValue: {
             notifyImageReceived: async () => {},
           },
@@ -25,7 +25,7 @@ describe('NotifyImageReceivedService', () => {
     notifyImageReceivedService = moduleTest.get<NotifyImageReceivedService>(
       NotifyImageReceivedService,
     );
-    rabbitMqConnector = moduleTest.get<RabbitConnector>(RabbitConnector);
+    queueConnector = moduleTest.get<QueueConnector>('QueueConnector');
   });
 
   afterAll(async () => {
@@ -34,14 +34,11 @@ describe('NotifyImageReceivedService', () => {
 
   test('should notify correctly', async () => {
     const imageName = 'some image';
-    const rabbitMqConnectorSpy = jest.spyOn(
-      rabbitMqConnector,
-      'notifyImageReceived',
-    );
+    const queueConnectorSpy = jest.spyOn(queueConnector, 'notifyImageReceived');
     await notifyImageReceivedService.notify(imageName);
 
-    expect(rabbitMqConnectorSpy).toBeCalledTimes(1);
-    expect(rabbitMqConnectorSpy).toBeCalledWith({
+    expect(queueConnectorSpy).toBeCalledTimes(1);
+    expect(queueConnectorSpy).toBeCalledWith({
       imageName,
       ocurredAt: new Date(),
     });

@@ -1,17 +1,17 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { GreyscaleConverterService } from '@greyscale-converter/greyscale-converter.service';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
 import { ImageEditorAdapter } from '@infra/image-editor-adapter/image-editor-adapter.service';
+import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 
 describe('GreyscaleConverterService', () => {
-  let rabbitMqConnector: RabbitConnector;
+  let queueConnector: QueueConnector;
   let imageEditorAdapter: ImageEditorAdapter;
   let greyscaleConverterService: GreyscaleConverterService;
   let moduleTest: TestingModule;
-  let rabbitConnectorMock;
+  let queueConnectorMock;
 
   beforeAll(async () => {
-    rabbitConnectorMock = {
+    queueConnectorMock = {
       bindListener: () => {},
       notifyUploadImage: () => {},
     };
@@ -27,8 +27,8 @@ describe('GreyscaleConverterService', () => {
           },
         },
         {
-          provide: RabbitConnector,
-          useValue: rabbitConnectorMock,
+          provide: 'QueueConnector',
+          useValue: queueConnectorMock,
         },
       ],
     }).compile();
@@ -36,7 +36,7 @@ describe('GreyscaleConverterService', () => {
     greyscaleConverterService = moduleTest.get<GreyscaleConverterService>(
       GreyscaleConverterService,
     );
-    rabbitMqConnector = moduleTest.get<RabbitConnector>(RabbitConnector);
+    queueConnector = moduleTest.get<QueueConnector>('QueueConnector');
     imageEditorAdapter = moduleTest.get<ImageEditorAdapter>(ImageEditorAdapter);
   });
 
@@ -46,10 +46,7 @@ describe('GreyscaleConverterService', () => {
 
   test('should convert correctly', async () => {
     const imageName = 'some image';
-    const rabbitMqConnectorSpy = jest.spyOn(
-      rabbitMqConnector,
-      'notifyUploadImage',
-    );
+    const queueConnectorSpy = jest.spyOn(queueConnector, 'notifyUploadImage');
     const imageEditorAdapterSpy = jest.spyOn(imageEditorAdapter, 'greyscale');
 
     await greyscaleConverterService.convert({
@@ -57,8 +54,8 @@ describe('GreyscaleConverterService', () => {
       ocurredAt: new Date(),
     });
 
-    expect(rabbitMqConnectorSpy).toBeCalledTimes(1);
-    expect(rabbitMqConnectorSpy).toBeCalledWith({
+    expect(queueConnectorSpy).toBeCalledTimes(1);
+    expect(queueConnectorSpy).toBeCalledWith({
       imageName,
       ocurredAt: new Date(),
     });
