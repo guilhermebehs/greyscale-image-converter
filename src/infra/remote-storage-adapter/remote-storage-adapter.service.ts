@@ -3,11 +3,10 @@ import AWS from 'aws-sdk';
 import { createReadStream } from 'fs';
 
 @Injectable()
-export class CloudAdapter {
+export class RemoteStorageAdapter {
   private s3: AWS.S3;
 
   constructor() {
-    AWS.config.update({ region: 'us-east-1' });
     this.s3 = new AWS.S3({ apiVersion: '2006-03-01' });
   }
 

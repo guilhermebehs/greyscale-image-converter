@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Message } from 'amqplib';
-import { Queue } from '@infra/rabbit-connector/queue';
+import { Queue } from '@src/infra/enums/queue';
 import { ImageReceivedEvent } from 'src/dtos';
-import { RabbitConnector } from '@infra/rabbit-connector/rabbit-connector.service';
 import { ImageEditorAdapter } from '@src/infra/image-editor-adapter/image-editor-adapter.service';
 import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 
@@ -25,8 +23,8 @@ export class GreyscaleConverterService {
   }
 
   private bindListener() {
-    const cb = async (msg: Message) => {
-      const event = JSON.parse(msg.content.toString()) as ImageReceivedEvent;
+    const cb = async (msg: string) => {
+      const event = JSON.parse(msg) as ImageReceivedEvent;
       await this.convert(event);
     };
 

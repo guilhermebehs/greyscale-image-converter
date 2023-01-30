@@ -1,21 +1,27 @@
 import { Module } from '@nestjs/common';
-import { CloudAdapter } from './cloud-adapter/cloud-adapter.service';
+import { RemoteStorageAdapter } from './remote-storage-adapter/remote-storage-adapter.service';
 import { ImageEditorAdapter } from './image-editor-adapter/image-editor-adapter.service';
+import { QueueConnector } from './interfaces/queue-connector';
 import { RabbitConnector } from './rabbit-connector/rabbit-connector.service';
+import { SQSConnector } from './sqs-connector/sqs-connector.service';
 
 @Module({
   providers: [
     {
       provide: 'QueueConnector',
       useFactory: async () => {
-        const rabbitMq = new RabbitConnector();
-        await rabbitMq.connect();
-        return rabbitMq;
+        let queueConnector: QueueConnector;
+        if (process.env.NODE_ENV === 'production')
+          queueConnector = new SQSConnector();
+        else queueConnector = new RabbitConnector();
+
+        await queueConnector.configure();
+        return queueConnector;
       },
     },
-    CloudAdapter,
+    RemoteStorageAdapter,
     ImageEditorAdapter,
   ],
-  exports: ['QueueConnector', CloudAdapter, ImageEditorAdapter],
+  exports: ['QueueConnector', RemoteStorageAdapter, ImageEditorAdapter],
 })
 export class InfraModule {}

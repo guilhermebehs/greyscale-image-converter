@@ -10,9 +10,9 @@ async function createFileFolder() {
 }
 
 async function bootstrap() {
+  dotenv.config();
   const app = await NestFactory.create(AppModule);
   await createFileFolder();
-  dotenv.config();
   await app.listen(process.env.PORT || 3000);
 }
 

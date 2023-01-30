@@ -1,12 +1,12 @@
 import { ImageReceivedEvent, UploadImageCommand } from '@src/dtos';
-import { Queue } from '../rabbit-connector/queue';
+import { Queue } from '../enums/queue';
 
 export interface QueueConnector {
-  connect(): Promise<any>;
+  configure(): Promise<void>;
 
-  notifyImageReceived(imageReceived: ImageReceivedEvent): Promise<any>;
+  notifyImageReceived(imageReceived: ImageReceivedEvent): Promise<void>;
 
-  notifyUploadImage(uploadImage: UploadImageCommand): Promise<any>;
+  notifyUploadImage(uploadImage: UploadImageCommand): Promise<void>;
 
-  bindListener(queueName: Queue, cb: any): Promise<any>;
+  bindListener(queueName: Queue, cb: any): Promise<void>;
 }

@@ -1,13 +1,13 @@
-import { Channel, connect } from 'amqplib';
+import { Channel, connect, ConsumeMessage } from 'amqplib';
 import { ImageReceivedEvent, UploadImageCommand } from 'src/dtos';
 import { QueueConnector } from '../interfaces/queue-connector';
 import { Exchange } from './exchange';
-import { Queue } from './queue';
+import { Queue } from '../enums/queue';
 
 export class RabbitConnector implements QueueConnector {
   private channel: Channel;
 
-  async connect() {
+  async configure() {
     try {
       const connection = await connect(process.env.RABBIT_HOST);
       this.channel = await connection.createChannel();
@@ -72,6 +72,13 @@ export class RabbitConnector implements QueueConnector {
   }
 
   async bindListener(queueName: Queue, cb: any) {
-    this.channel.consume(queueName, cb, { noAck: true });
+    this.channel.consume(
+      queueName,
+      async (msg: ConsumeMessage) => {
+        const msgStr = msg.content.toString();
+        await cb(msgStr);
+      },
+      { noAck: true },
+    );
   }
 }

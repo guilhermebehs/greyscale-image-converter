@@ -1,13 +1,13 @@
 import { TestingModule, Test } from '@nestjs/testing';
+import { RemoteStorageAdapter } from '@src/infra/remote-storage-adapter/remote-storage-adapter.service';
 import { UploaderService } from '@src/uploader/uploader.service';
-import { CloudAdapter } from '@src/infra/cloud-adapter/cloud-adapter.service';
 import fs from 'fs';
 
 jest.mock('fs');
 
 describe('UploaderService', () => {
   let uploaderService: UploaderService;
-  let cloudAdapter: CloudAdapter;
+  let remoteStorageAdapter: RemoteStorageAdapter;
   let moduleTest: TestingModule;
 
   beforeAll(async () => {
@@ -15,7 +15,7 @@ describe('UploaderService', () => {
       providers: [
         UploaderService,
         {
-          provide: CloudAdapter,
+          provide: RemoteStorageAdapter,
           useValue: {
             uploadFile: async () => {},
           },
@@ -30,7 +30,8 @@ describe('UploaderService', () => {
     }).compile();
 
     uploaderService = moduleTest.get<UploaderService>(UploaderService);
-    cloudAdapter = moduleTest.get<CloudAdapter>(CloudAdapter);
+    remoteStorageAdapter =
+      moduleTest.get<RemoteStorageAdapter>(RemoteStorageAdapter);
   });
 
   afterAll(async () => {
@@ -39,7 +40,10 @@ describe('UploaderService', () => {
 
   test('should upload correctly', async () => {
     const imageName = 'some image';
-    const cloudAdapterSpy = jest.spyOn(cloudAdapter, 'uploadFile');
+    const remoteStorageAdapterSpy = jest.spyOn(
+      remoteStorageAdapter,
+      'uploadFile',
+    );
     const fsSpy = jest.spyOn(fs, 'rmSync');
 
     await uploaderService.upload({
@@ -47,8 +51,8 @@ describe('UploaderService', () => {
       ocurredAt: new Date(),
     });
 
-    expect(cloudAdapterSpy).toBeCalledTimes(1);
-    expect(cloudAdapterSpy).toBeCalledWith(imageName);
+    expect(remoteStorageAdapterSpy).toBeCalledTimes(1);
+    expect(remoteStorageAdapterSpy).toBeCalledWith(imageName);
     expect(fsSpy).toBeCalledTimes(1);
     expect(fsSpy).toBeCalledWith(`./files/${imageName}`);
   });
