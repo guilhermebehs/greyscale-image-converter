@@ -16,7 +16,7 @@ COPY --from=builder /home/app/dist ./dist/
 COPY --from=builder /home/app/package.json ./
 COPY --from=builder /home/app/package-lock.json ./
 
-RUN npm ci --only-production
+RUN npm ci --omit=dev
 
 EXPOSE 3000
 
