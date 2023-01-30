@@ -1,40 +1,38 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 
-
 exports.handler = async (event) => {
-    
-    AWS.config.update({ region: 'us-east-1' });
-    
-    const [record] = event.Records
+  AWS.config.update({ region: 'us-east-1' });
 
-    const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '))
-    const eventTime = record.eventTime
-        
+  const [record] = event.Records;
 
-    const template = fs
+  const key = decodeURIComponent(record.s3.object.key.replace(/\+/g, ' '));
+  const eventTime = record.eventTime;
+
+  const template = fs
     .readFileSync('./template.html')
     .toString()
     .replace('${fileName}', key)
     .replace('${dateTime}', eventTime);
 
-    const params = {
+  const params = {
     Destination: {
-        ToAddresses: [
-        'guilhermebehs2013@hotmail.com',
-        ],
+      ToAddresses: ['guilhermebehs2013@hotmail.com'],
     },
     Message: {
-        Body: {
+      Body: {
         Html: {
-            Charset: 'UTF-8',
-            Data: template,
+          Charset: 'UTF-8',
+          Data: template,
         },
-        },
-        Subject: {
+      },
+      Subject: {
         Charset: 'UTF-8',
         Data: 'Término de conversão do arquivo',
-        },
+      },
     },
-    Source: 'saintjimmyrs@hotmail.com' 
+    Source: 'saintjimmyrs@hotmail.com' /* required */,
+  };
+
+  await new AWS.SES({ apiVersion: '2010-12-01' }).sendEmail(params).promise();
 };
