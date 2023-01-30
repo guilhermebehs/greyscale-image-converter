@@ -1,0 +1,5 @@
+dist/
+aws-lambda/
+node_modules/
+.env
+files/

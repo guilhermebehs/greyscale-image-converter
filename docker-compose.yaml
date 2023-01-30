@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    hostname: rabbitmq
+    restart: always
+    ports:
+      - 15672:15672
+      - 5672:5672
+  greyscale-image-converter:
+    container_name: greyscale-image-converter
+    depends_on:
+      - rabbitmq
+    restart: always
+    build:
+      context: .
+    environment:
+      - PORT=${PORT}
+      - RABBIT_HOST=${RABBIT_HOST}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+    ports:
+      - 3000:3000
