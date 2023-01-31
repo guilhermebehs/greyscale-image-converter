@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
 
-exports.handler = async (event) => {
+module.exports.invoke = async (event) => {
   AWS.config.update({ region: 'us-east-1' });
 
   const [record] = event.Records;
