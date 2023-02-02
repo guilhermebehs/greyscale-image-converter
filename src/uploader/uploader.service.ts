@@ -4,6 +4,8 @@ import { UploadImageCommand } from 'src/dtos';
 import { Queue } from '@src/infra/enums/queue';
 import { QueueConnector } from '@src/infra/interfaces/queue-connector';
 import { RemoteStorageAdapter } from '@src/infra/remote-storage-adapter/remote-storage-adapter.service';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { Counter } from 'prom-client';
 
 @Injectable()
 export class UploaderService {
@@ -13,6 +15,10 @@ export class UploaderService {
     @Inject('QueueConnector')
     private readonly queueConnector: QueueConnector,
     private readonly remoteStorageAdapter: RemoteStorageAdapter,
+    @InjectMetric('upload_success')
+    private readonly uploadSuccess: Counter<string>,
+    @InjectMetric('upload_failure')
+    private readonly uploadFailure: Counter<string>,
   ) {
     this.bindListener();
   }
@@ -26,8 +32,11 @@ export class UploaderService {
       await this.remoteStorageAdapter.uploadFile(imageName);
       rmSync(`./files/${imageName}`);
 
+      this.uploadSuccess.inc();
+
       this.logger.log(`(upload) Image ${imageName} sent to remote storage`);
     } catch (e) {
+      this.uploadFailure.inc();
       this.logger.error(
         `(upload) Error sending image ${uploadImageCommand.imageName} to remote storage: ${e.message}`,
       );
