@@ -1,6 +1,7 @@
 import {
   Controller,
   FileTypeValidator,
+  Logger,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -14,6 +15,8 @@ import { NotifyImageReceivedService } from './notify-image-received.service';
 
 @Controller({ path: 'file-receiver' })
 export class FileReceiverController {
+  private readonly logger = new Logger(FileReceiverController.name);
+
   constructor(
     private readonly notifyImageReceivedService: NotifyImageReceivedService,
   ) {}
@@ -31,9 +34,20 @@ export class FileReceiverController {
     )
     image: Express.Multer.File,
   ) {
-    const name = image.originalname + '_' + new Date().getTime();
-    Readable.from(image.buffer).pipe(createWriteStream(`./files/${name}`));
+    try {
+      this.logger.log(`(updloadFile) File received: ${image.originalname}`);
 
-    await this.notifyImageReceivedService.notify(name);
+      const name = image.originalname + '_' + new Date().getTime();
+
+      Readable.from(image.buffer).pipe(createWriteStream(`./files/${name}`));
+
+      this.logger.log(`(updloadFile) File saved: ${image.originalname}`);
+
+      await this.notifyImageReceivedService.notify(name);
+    } catch (e) {
+      this.logger.error(
+        `(updloadFile) Error saving file ${image.originalname}: ${e.message}`,
+      );
+    }
   }
 }
