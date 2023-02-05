@@ -1,5 +1,7 @@
 dist/
 aws-lambda/
 node_modules/
-.env
+grafana/data/
+prometheus/data/
+.env*
 files/

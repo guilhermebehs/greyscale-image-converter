@@ -11,7 +11,9 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     InfraModule,
     GreyscaleConverterModule,
     UploaderModule,
-    PrometheusModule.register(),
+    PrometheusModule.register({
+      defaultLabels: { application: 'greyscale-image-converter' },
+    }),
   ],
   controllers: [],
 })

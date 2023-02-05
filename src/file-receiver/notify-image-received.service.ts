@@ -29,6 +29,7 @@ export class NotifyImageReceivedService {
           imageReceivedEvent,
         )}: ${e.message}`,
       );
+      throw new Error();
     }
   }
 }

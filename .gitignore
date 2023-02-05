@@ -9,6 +9,10 @@
 .env
 .env-docker
 
+#docker data
+/grafana/data
+/prometheus/data
+
 # Logs
 logs
 *.log

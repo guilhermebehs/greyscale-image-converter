@@ -1,16 +1,23 @@
 version: "3"
 
+networks:
+  greyscale-image-converter-network:
+    driver: bridge
 services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8-management-alpine
     hostname: rabbitmq
     restart: always
+    networks:
+      - greyscale-image-converter-network
     ports:
       - 15672:15672
       - 5672:5672
   greyscale-image-converter:
     container_name: greyscale-image-converter
+    networks:
+      - greyscale-image-converter-network
     depends_on:
       - rabbitmq
     restart: always
@@ -27,7 +34,25 @@ services:
       - 3000:3000
   prometheus:
     image: prom/prometheus
+    networks:
+      - greyscale-image-converter-network
     ports:
       - "9090:9090" 
+    depends_on:
+      - greyscale-image-converter
     volumes:
+      - ./prometheus/data:/prometheus
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml    
+  grafana:
+     image: grafana/grafana
+     container_name: grafana
+     networks:
+      - greyscale-image-converter-network
+     depends_on:
+      - prometheus
+     ports:
+      - "4000:3000"
+     volumes:
+      - ./grafana/data:/var/lib/grafana
+
+      

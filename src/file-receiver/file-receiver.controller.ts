@@ -1,6 +1,7 @@
 import {
   Controller,
   FileTypeValidator,
+  InternalServerErrorException,
   Logger,
   MaxFileSizeValidator,
   ParseFilePipe,
@@ -57,6 +58,7 @@ export class FileReceiverController {
       this.logger.error(
         `(updloadFile) Error saving file ${image.originalname}: ${e.message}`,
       );
+      throw new InternalServerErrorException()
     }
   }
 }
