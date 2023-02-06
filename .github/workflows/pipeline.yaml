@@ -7,30 +7,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout source code
+       uses: actions/checkout@v2
+     - name: zip files and folders
+       run: |
+            zip -r greyscale-image-converter.zip src/ test/ prometheus/ .dockerignore Dockerfile nest-cli.json package*.json tsconfig* jest*
 
   deploy:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-
-      - name: build
-        run: |
-            zip -r greyscale-image-converter.zip src/ test/ prometheus/ .dockerignore Dockerfile nest-cli.json package*.json tsconfig* jest*
-            ls -l
-      - name: deploy
+    needs: [build]
+    steps:  
+      - name: deploy on elastic beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: greyscale-image-converter
-          environment_name: Greyscaleimageconverter-env
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           version_label: ${{ github.run_id }}
           region: ${{ secrets.AWS_REGION }}
           deployment_package: greyscale-image-converter.zip
