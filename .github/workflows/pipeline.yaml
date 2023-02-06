@@ -22,7 +22,7 @@ jobs:
             npm t     
      - name: Zip files and folders
        run: |
-            zip -r greyscale-image-converter.zip src/ test/ prometheus/ .dockerignore Dockerfile nest-cli.json package*.json tsconfig* jest*
+            zip -r greyscale-image-converter.zip src/ .dockerignore Dockerfile nest-cli.json package*.json tsconfig*
      - name: Deploy on Elastic Beanstalk
        uses: einaregilsson/beanstalk-deploy@v21
        with:
