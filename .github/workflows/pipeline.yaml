@@ -22,7 +22,7 @@ jobs:
 
       - name: build
         run: |
-            zip -r greyscale-image-converter.zip src/ prometheus/ Dockerfile nest-cli.json package*.json tsconfig.build.json tsconfig.json
+            zip -r greyscale-image-converter.zip src/ test/ prometheus/ .dockerignore Dockerfile nest-cli.json package*.json tsconfig* jest*
             ls -l
       - name: deploy
         uses: einaregilsson/beanstalk-deploy@v21
