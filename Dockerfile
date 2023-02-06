@@ -5,7 +5,7 @@ WORKDIR /home/app
 COPY . .
 
 RUN npm ci
-RUN npm t
+
 RUN npm run build
 
 FROM node:18-alpine
