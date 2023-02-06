@@ -30,7 +30,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: greyscale-image-converter
-          environment_name: Greyscaleimageconverter-env-1
+          environment_name: Greyscaleimageconverter-env
           version_label: ${{ github.run_id }}
           region: ${{ secrets.AWS_REGION }}
           deployment_package: greyscale-image-converter.zip
