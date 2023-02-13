@@ -55,5 +55,19 @@ services:
       - "4000:3000"
      volumes:
       - ./grafana/data:/var/lib/grafana
+  alertmanager-greyscale-image-converter: 
+    image: prom/alertmanager
+    container_name: alertmanager-greyscale-image-converter
+    volumes: 
+      - ./alertmanager:/etc/alertmanager/:ro
+    ports: 
+      - 9093:9093
+    command: 
+      - --config.file=/etc/alertmanager/alertmanager.yml
+    networks:
+      - greyscale-image-converter-network
+    depends_on:
+      - prometheus
+     
 
       
