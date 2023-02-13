@@ -43,6 +43,7 @@ services:
     volumes:
       - ./prometheus/data:/prometheus
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml    
+      - ./prometheus/alert.rules:/etc/prometheus/alert.rules
   grafana:
      image: grafana/grafana
      container_name: grafana

@@ -1,0 +1,15 @@
+groups:
+- name: ops-greyscale-image-converter
+  rules:
+  - alert: 'EXCESSO DE ERROS 500'
+    expr: increase(http_errors{application="greyscale-image-converter", instance="greyscale-image-converter:3000", status="500"}[1m]) >= 10
+    for: 1m
+    labels:
+      app: 'greyscale-image-converter'
+      severity: 'critical'
+      group: 'ops-greyscale-image-converter'
+      env: 'production'
+    annotations:
+      title: 'EXCESSO DE ERROS 500'
+      summary: 'Há um excesso de erros 500 nos últimos minutos.'
+      description: 'Há um excesso de erros 500 nos últimos minutos.'
