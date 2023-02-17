@@ -1,7 +1,7 @@
 groups:
 - name: ops-greyscale-image-converter
   rules:
-  - alert: 'EXCESSO DE ERROS 500'
+  - alert: 'TOO MANY STATUS CODE 500'
     expr: increase(http_errors{application="greyscale-image-converter", instance="greyscale-image-converter:3000", status="500"}[1m]) >= 10
     for: 1m
     labels:
@@ -10,6 +10,19 @@ groups:
       group: 'ops-greyscale-image-converter'
       env: 'production'
     annotations:
-      title: 'EXCESSO DE ERROS 500'
-      summary: 'Há um excesso de erros 500 nos últimos minutos.'
-      description: 'Há um excesso de erros 500 nos últimos minutos.'
+      title: 'TOO MANY STATUS CODE 500'
+      summary: 'There are too many requests with status code 500 on the last minutes.'
+      description: 'There are too many requests with status code 500 on the last minutes.'
+
+  - alert: 'MEMORY HEAP REACHING LIMIT'
+    expr: sum(nodejs_heap_size_used_bytes{application="greyscale-image-converter", instance="greyscale-image-converter:3000"}) * 100 /sum(nodejs_heap_size_total_bytes{application="greyscale-image-converter", instance="greyscale-image-converter:3000"})  >= 92
+    for: 1m
+    labels:
+      app: 'greyscale-image-converter'
+      severity: 'critical'
+      group: 'ops-greyscale-image-converter'
+      env: 'production'
+    annotations:
+      title: 'MEMORY HEAP REACHING LIMIT'
+      summary: 'Memory heap of application is reaching its limit.'
+      description: 'Memory heap of application is reaching its limit.'    
