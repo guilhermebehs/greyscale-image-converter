@@ -28,6 +28,6 @@ Github Actions builds and deploys app in Amazon Elastic Beanstalk. Prometheus e 
 * AWS
 * Monitoring, observability and logging
 * CI/CD
-* Infraestructure as code
+* Infraestructure as a code
 * DI concepts
 * Unit tests
